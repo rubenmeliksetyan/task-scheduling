@@ -13,14 +13,18 @@ Monorepo containing a NestJS REST API and a Vue 3 + TypeScript admin UI.
 
 ## Quickstart
 
-Prereqs: Node 18+, MySQL 8+ (or compatible). Network access is required to install dependencies.
+You can run everything with Docker, or run services locally in dev mode.
 
-### Backend
-1. Copy env: `cp backend/.env.example backend/.env`
-2. Edit DB credentials in `backend/.env`.
-3. Install deps: `cd backend && npm i`
-4. Start dev: `npm run start:dev` (default port `3000`)
-5. Seed data (optional): `npm run seed`
+### Option A — Docker (recommended)
+- Build and start all services (MySQL, backend, frontend):
+  - `docker compose up -d --build`
+- URLs:
+  - Backend API: `http://localhost:3000` (prefix `/api`)
+  - Frontend UI: `http://localhost:5174`
+- Seed demo data (admin + users + sample tasks):
+  - `docker exec ts_backend node dist/seed.js`
+- Notes:
+  - MySQL is internal (no host port exposed). Use `docker exec -it ts_mysql mysql -uroot -proot` to connect, or expose a host port by editing `docker-compose.yml`.
 
 Auth:
 - Login via `POST /api/auth/login` with `{ email, password }`.
@@ -34,26 +38,29 @@ API routes:
 - `GET /api/users` — List users
 - `PATCH /api/users/:id/toggle-availability` — Toggle availability
 
-### Frontend
+### Option B — Local dev (no Docker)
+
+Backend
+1. Copy env: `cp backend/.env.example backend/.env`
+2. Edit DB credentials in `backend/.env`.
+3. Install deps: `cd backend && npm i`
+4. Start dev: `npm run start:dev` (default port `3000`)
+5. Seed data (optional): `npm run seed`
+
+Frontend
 1. Install deps: `cd frontend && npm i`
 2. Start dev server: `npm run dev` (default port `5173`)
-3. Frontend proxies `/api/*` to `http://localhost:3000`.
+3. Vite dev server proxies `/api/*` to `http://localhost:3000`.
 
 Login with the admin credentials above, then manage tasks and users.
 
-## Docker (Optional)
-- Provided `docker-compose.yml` runs MySQL + backend.
-- Build and start:
-  - `docker compose up -d --build`
-  - Backend: http://localhost:3000, MySQL: localhost:3306
-- Seed (from a shell inside backend):
-  - `docker compose exec backend node dist/seed.js`
-    - If `dist/seed.js` is not built yet, rebuild: `docker compose up -d --build`
-- Frontend is not containerized here; run locally with Vite.
+## Realtime notifications
+- Socket.IO gateway at namespace `/events` with JWT handshake.
+- Frontend connects via `/events` and listens for `task.created` and `task.updated`.
 
 ## Notes
 - TypeORM `synchronize` is enabled via `.env` for local dev; disable in prod.
-- Notifications/websockets are not implemented in this baseline (bonus item).
+- To expose MySQL to the host, add a `ports:` mapping under the `mysql` service (e.g. `"3311:3306"`).
 
 ## License
 MIT
