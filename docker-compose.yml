@@ -1,0 +1,43 @@
+version: '3.9'
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: ts_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: task_scheduler
+    volumes:
+      - mysql-data:/var/lib/mysql
+    # no host port mapping to avoid conflicts; backend uses service name
+
+  backend:
+    build: ./backend
+    container_name: ts_backend
+    environment:
+      PORT: 3000
+      JWT_SECRET: dev-secret
+      JWT_EXPIRES_IN: 1h
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USERNAME: root
+      DB_PASSWORD: root
+      DB_NAME: task_scheduler
+      TYPEORM_SYNC: 'true'
+      TYPEORM_LOGGING: 'false'
+      SEED_ADMIN_EMAIL: admin@example.com
+      SEED_ADMIN_PASSWORD: changeme
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mysql
+
+  frontend:
+    build: ./frontend
+    container_name: ts_frontend
+    depends_on:
+      - backend
+    ports:
+      - "5174:80"
+
+volumes:
+  mysql-data:
