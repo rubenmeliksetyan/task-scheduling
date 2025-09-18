@@ -47,9 +47,14 @@ export class TasksService {
       dueDate: dto.dueDate ? new Date(dto.dueDate) : undefined,
       status: dto.status,
     });
-    if (dto.assigneeId) {
-      const user = await this.usersService.findById(dto.assigneeId);
-      if (user) task.assignee = user;
+    if (dto.assigneeId !== undefined) {
+      if (dto.assigneeId > 0) {
+        const user = await this.usersService.findById(dto.assigneeId);
+        if (!user) throw new NotFoundException('Assignee not found');
+        task.assignee = user;
+      } else {
+        task.assignee = null;
+      }
     }
     const saved = await this.repo.save(task);
     this.notifications.taskCreated(saved);
@@ -63,8 +68,13 @@ export class TasksService {
     if (dto.dueDate !== undefined) task.dueDate = dto.dueDate ? new Date(dto.dueDate) : null;
     if (dto.status !== undefined) task.status = dto.status as any;
     if (dto.assigneeId !== undefined) {
-      const user = dto.assigneeId ? await this.usersService.findById(dto.assigneeId) : null;
-      task.assignee = user ?? null;
+      if (dto.assigneeId > 0) {
+        const user = await this.usersService.findById(dto.assigneeId);
+        if (!user) throw new NotFoundException('Assignee not found');
+        task.assignee = user;
+      } else {
+        task.assignee = null;
+      }
     }
     const saved = await this.repo.save(task);
     this.notifications.taskUpdated(saved);
