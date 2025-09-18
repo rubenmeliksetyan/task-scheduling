@@ -28,6 +28,7 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue';
 import api from '../utils/api';
+import type { Task, User } from '../types';
 import { useAuthStore } from '../stores/auth';
 import TaskBoard from '../components/TaskBoard.vue';
 import TaskModal from '../components/TaskModal.vue';
@@ -39,17 +40,6 @@ import { useNotificationsStore } from '../stores/notifications';
 
 const auth = useAuthStore();
 api.setToken(auth.token);
-
-type Task = {
-  id: number;
-  title: string;
-  description?: string;
-  dueDate?: string;
-  status: 'todo'|'in_progress'|'done';
-  assignee?: { id: number; email: string; fullName: string } | null;
-};
-
-type User = { id: number; email: string; fullName: string; availability: string };
 
 const tasks = ref<Task[]>([]);
 const users = ref<User[]>([]);

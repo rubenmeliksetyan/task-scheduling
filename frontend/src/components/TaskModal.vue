@@ -40,12 +40,13 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, watch, toRefs } from 'vue';
+import { reactive, watch } from 'vue';
+import type { Task, TaskInput, TaskStatus } from '../types';
 
-const props = defineProps<{ open: boolean; initial: any | null }>();
-const emit = defineEmits<{ (e: 'save', payload: any): void; (e: 'close'): void }>();
+const props = defineProps<{ open: boolean; initial: Task | null }>();
+const emit = defineEmits<{ (e: 'save', payload: TaskInput): void; (e: 'close'): void }>();
 
-const form = reactive({ title: '', description: '', dueDate: '', status: 'todo', assigneeId: undefined as number | undefined });
+const form = reactive({ title: '', description: '', dueDate: '', status: 'todo' as TaskStatus, assigneeId: undefined as number | undefined });
 
 watch(() => props.initial, (v) => {
   if (v) {
@@ -64,7 +65,7 @@ watch(() => props.initial, (v) => {
 }, { immediate: true });
 
 function save() {
-  const payload: any = { title: form.title, description: form.description, status: form.status };
+  const payload: TaskInput = { title: form.title, description: form.description, status: form.status };
   if (form.assigneeId) payload.assigneeId = form.assigneeId;
   if (form.dueDate) payload.dueDate = form.dueDate;
   emit('save', payload);
@@ -74,4 +75,3 @@ function save() {
 <style scoped>
 label { color: var(--muted); font-size: 14px; }
 </style>
-

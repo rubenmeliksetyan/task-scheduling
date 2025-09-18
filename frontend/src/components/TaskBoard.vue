@@ -31,14 +31,14 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import TaskCard from './TaskCard.vue';
+import type { Task, TaskStatus } from '../types';
 
-const props = defineProps<{ tasks: any[] }>();
-const emit = defineEmits<{ (e: 'edit', t: any | null): void; (e: 'remove', id: number): void; (e: 'create'): void }>();
+const props = defineProps<{ tasks: Task[] }>();
+const emit = defineEmits<{ (e: 'edit', t: Task | null): void; (e: 'remove', id: number): void; (e: 'create'): void }>();
 
-const byStatus = (s: string) => props.tasks.filter((t) => t.status === s);
+const byStatus = (s: TaskStatus) => props.tasks.filter((t) => t.status === s);
 </script>
 
 <style scoped>
 h4 { margin: 0 0 8px; color: var(--muted); }
 </style>
-

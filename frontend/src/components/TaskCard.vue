@@ -16,9 +16,9 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{ task: any }>();
-defineEmits<{ (e: 'edit', task: any): void; (e: 'remove', id: number): void }>();
+import type { Task } from '../types';
+defineProps<{ task: Task }>();
+defineEmits<{ (e: 'edit', task: Task): void; (e: 'remove', id: number): void }>();
 </script>
 
 <style scoped></style>
-

@@ -20,11 +20,11 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{ users: any[] }>();
+import type { User } from '../types';
+defineProps<{ users: User[] }>();
 defineEmits<{ (e: 'toggle', id: number): void }>();
 </script>
 
 <style scoped>
 h4 { color: var(--muted); }
 </style>
-
